@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 
 class PostResource extends Resource
 {
@@ -58,13 +60,17 @@ class PostResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id'),
-                TextColumn::make('title')->sortable()->limit(50),
+                TextColumn::make('title')->limit(50)->sortable()->searchable(),
                 TextColumn::make('slug')->limit(50),
                 ToggleColumn::make('is_published'),
                 SpatieMediaLibraryImageColumn::make('thumbnail')->collection('posts'),
             ])
             ->filters([
-                //
+                Filter::make('Published')
+                    ->query(fn (Builder $query): Builder => $query->where('is_published', true)),
+                Filter::make('Unpublished')
+                    ->query(fn (Builder $query): Builder => $query->where('is_published', false)),
+                SelectFilter::make('Category')->relationship('category', 'name')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
