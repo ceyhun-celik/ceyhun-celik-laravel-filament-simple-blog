@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TagResource\Pages;
 use App\Filament\Resources\TagResource\RelationManagers;
+use App\Filament\Resources\TagResource\RelationManagers\PostsRelationManager;
 use App\Models\Tag;
 use Closure;
 use Filament\Forms;
@@ -17,6 +18,9 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 
 class TagResource extends Resource
 {
@@ -34,7 +38,8 @@ class TagResource extends Resource
                         ->afterStateUpdated(function (Closure $set, $state) {
                             $set('slug', Str::slug($state));
                         })
-                        ->required(),
+                        ->required()
+                        ->maxLength(255),
                     TextInput::make('slug')
                 ])
             ]);
@@ -62,7 +67,7 @@ class TagResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PostsRelationManager::class
         ];
     }
     
